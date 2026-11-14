@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXVON AI — Painel Administrativo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ============ TELA DE LOGIN ============ -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card glass">
+      <div class="login-logo">
+        <span class="logo-text">NEXVON<span class="logo-accent">AI</span></span>
+      </div>
+      <p class="login-subtitle">Painel Administrativo — WhatsApp AI</p>
+      <form id="login-form" autocomplete="off">
+        <label class="field-label" for="login-password">Senha de administração</label>
+        <div class="input-wrap">
+          <input type="password" id="login-password" placeholder="Digite a senha" autocomplete="off" />
+          <button type="button" id="toggle-pwd" class="icon-btn" title="Mostrar/ocultar">👁</button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+        <p id="login-error" class="login-error"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ LAYOUT PRINCIPAL ============ -->
+  <div id="app-layout" class="app-layout hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-text">NEXVON<span class="logo-accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard">
+          <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="conversas">
+          <span class="nav-icon">💬</span><span class="nav-label">Conversas</span>
+        </button>
+        <button class="nav-item" data-view="leads">
+          <span class="nav-icon">👥</span><span class="nav-label">Leads</span>
+        </button>
+        <button class="nav-item" data-view="knowledge">
+          <span class="nav-icon">📚</span><span class="nav-label">Base de Conhecimento</span>
+        </button>
+        <button class="nav-item" data-view="config">
+          <span class="nav-icon">⚙️</span><span class="nav-label">Configurações da IA</span>
+        </button>
+        <button class="nav-item" data-view="escalonamento">
+          <span class="nav-icon">🔀</span><span class="nav-label">Escalonamento</span>
+        </button>
+        <button class="nav-item" data-view="logs">
+          <span class="nav-icon">📋</span><span class="nav-label">Logs do Sistema</span>
+        </button>
+        <button class="nav-item" data-view="whatsapp">
+          <span class="nav-icon">📱</span><span class="nav-label">WhatsApp</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <span class="version-tag">v1.0.0</span>
+      </div>
+    </aside>
+
+    <!-- Área principal -->
+    <div class="main-area">
+      <!-- Topbar -->
+      <header class="topbar">
+        <button id="hamburger" class="hamburger" title="Menu">☰</button>
+        <h1 id="topbar-title" class="topbar-title">Dashboard</h1>
+        <div class="topbar-right">
+          <div class="wa-status" id="wa-status-top" title="Status WhatsApp">
+            <span class="wa-dot" id="wa-dot"></span>
+            <span class="wa-label" id="wa-label">Conectando…</span>
+          </div>
+          <button id="logout-btn" class="btn btn-ghost btn-sm" title="Sair">Sair</button>
+        </div>
+      </header>
+
+      <!-- Conteúdo das abas -->
+      <main class="content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section id="view-dashboard" class="view active">
+          <div class="stats-grid" id="stats-grid"></div>
+          <div class="charts-grid">
+            <div class="chart-card glass">
+              <div class="chart-header">
+                <h3>Mensagens por dia</h3>
+                <span class="chart-sub">Últimos 14 dias</span>
+              </div>
+              <canvas id="chart-messages"></canvas>
+            </div>
+            <div class="chart-card glass">
+              <div class="chart-header">
+                <h3>Leads por status</h3>
+                <span class="chart-sub">Distribuição atual</span>
+              </div>
+              <canvas id="chart-status"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CONVERSAS ===== -->
+        <section id="view-conversas" class="view">
+          <div class="conversas-layout">
+            <div class="conversas-list glass" id="conversas-list">
+              <div class="conversas-search">
+                <input type="text" id="conv-search" placeholder="🔍 Buscar lead…" />
+              </div>
+              <div id="conv-leads" class="conv-leads-scroll"></div>
+            </div>
+            <div class="conversas-chat glass" id="conversas-chat">
+              <div id="chat-empty" class="chat-empty">
+                <div class="chat-empty-icon">💬</div>
+                <p>Selecione uma conversa ao lado</p>
+              </div>
+              <div id="chat-active" class="chat-active hidden">
+                <div class="chat-header">
+                  <div class="chat-header-info">
+                    <span class="chat-name" id="chat-name">—</span>
+                    <span class="chat-phone" id="chat-phone">—</span>
+                    <span class="badge" id="chat-status-badge">—</span>
+                  </div>
+                  <div class="chat-header-actions">
+                    <button id="takeover-btn" class="btn btn-sm btn-gold">Retomar conversa</button>
+                  </div>
+                </div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" id="chat-form">
+                  <input type="text" id="chat-input" placeholder="Digite uma mensagem como atendente humano…" autocomplete="off" />
+                  <button type="submit" class="btn btn-primary btn-sm">Enviar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== LEADS ===== -->
+        <section id="view-leads" class="view">
+          <div class="leads-toolbar">
+            <input type="text" id="leads-search" placeholder="🔍 Buscar por nome, telefone ou tag…" class="search-input" />
+            <span class="leads-count" id="leads-count">0 leads</span>
+          </div>
+          <div class="table-wrap glass">
+            <table class="data-table" id="leads-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>Status</th>
+                  <th>Tags</th>
+                  <th>Idioma</th>
+                  <th>Última msg</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="leads-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== KNOWLEDGE / FAQ ===== -->
+        <section id="view-knowledge" class="view">
+          <div class="kb-toolbar">
+            <input type="text" id="kb-search" placeholder="🔍 Buscar na base…" class="search-input" />
+            <button id="kb-add-btn" class="btn btn-primary btn-sm">+ Adicionar item</button>
+          </div>
+          <div id="kb-list" class="kb-list"></div>
+
+          <!-- Modal de edição -->
+          <div id="kb-modal" class="modal-overlay hidden">
+            <div class="modal glass">
+              <h3 id="kb-modal-title">Adicionar item</h3>
+              <form id="kb-form">
+                <input type="hidden" id="kb-id" />
+                <label class="field-label">Categoria</label>
+                <input type="text" id="kb-category" placeholder="Ex: Preços, Planos, Suporte" required />
+                <label class="field-label">Pergunta</label>
+                <input type="text" id="kb-question" placeholder="Pergunta frequente" required />
+                <label class="field-label">Resposta</label>
+                <textarea id="kb-answer" rows="5" placeholder="Resposta que a IA deve usar" required></textarea>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="kb-enabled" checked />
+                  <span>Ativado</span>
+                </label>
+                <div class="modal-actions">
+                  <button type="button" id="kb-cancel" class="btn btn-ghost btn-sm">Cancelar</button>
+                  <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CONFIGURAÇÕES DA IA ===== -->
+        <section id="view-config" class="view">
+          <div class="config-card glass">
+            <div class="config-header">
+              <h3>Configurações da IA</h3>
+              <span class="llm-status" id="llm-status-badge">—</span>
+            </div>
+            <form id="config-form">
+              <label class="field-label">System Prompt <span class="char-count" id="prompt-count">0 caracteres</span></label>
+              <textarea id="cfg-system-prompt" rows="8" placeholder="Instruções de comportamento da IA…"></textarea>
+
+              <div class="config-grid">
+                <div class="config-field">
+                  <label class="field-label">API Key (LLM)</label>
+                  <input type="password" id="cfg-api-key" placeholder="Deixe vazio para manter a atual" autocomplete="off" />
+                </div>
+                <div class="config-field">
+                  <label class="field-label">Base URL</label>
+                  <input type="text" id="cfg-base-url" placeholder="https://api.openai.com/v1" />
+                </div>
+                <div class="config-field">
+                  <label class="field-label">Modelo</label>
+                  <input type="text" id="cfg-model" placeholder="gpt-4o-mini" />
+                </div>
+                <div class="config-field">
+                  <label class="field-label">Número do dono (WhatsApp)</label>
+                  <input type="text" id="cfg-owner" placeholder="5519997048175" />
+                </div>
+                <div class="config-field">
+                  <label class="field-label">Máximo de histórico</label>
+                  <input type="number" id="cfg-max-history" min="1" max="100" />
+                </div>
+                <div class="config-field">
+                  <label class="field-label">Temperatura: <span id="temp-value">0.7</span></label>
+                  <input type="range" id="cfg-temperature" min="0" max="1" step="0.05" value="0.7" class="slider" />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary">💾 Salvar configurações</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ===== ESCALONAMENTO ===== -->
+        <section id="view-escalonamento" class="view">
+          <div class="esc-card glass">
+            <div class="esc-header">
+              <h3>Escalonamento para humano</h3>
+              <label class="toggle-wrap">
+                <span class="toggle-label">Habilitado</span>
+                <input type="checkbox" id="esc-enabled" class="toggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <p class="esc-desc">Quando o lead digita uma das palavras-chave abaixo, a IA responde com o link do WhatsApp do dono e marca o lead como <b>escalonado</b>.</p>
+
+            <div class="esc-attempts">
+              <label class="field-label">Tentativas máximas antes de escalar</label>
+              <input type="number" id="esc-max-attempts" min="1" max="20" class="input-sm" />
+            </div>
+
+            <label class="field-label">Palavras-chave de escalonamento</label>
+            <div class="kw-add-row">
+              <input type="text" id="kw-input" placeholder="Ex: falar com humano, atendente, reclamação" />
+              <button type="button" id="kw-add-btn" class="btn btn-primary btn-sm">Adicionar</button>
+            </div>
+            <div id="kw-list" class="kw-list"></div>
+
+            <button id="esc-save-btn" class="btn btn-primary">💾 Salvar escalonamento</button>
+          </div>
+        </section>
+
+        <!-- ===== LOGS ===== -->
+        <section id="view-logs" class="view">
+          <div class="logs-card glass">
+            <div class="logs-header">
+              <h3>Logs do Sistema</h3>
+              <button id="logs-refresh" class="btn btn-ghost btn-sm">↻ Atualizar</button>
+            </div>
+            <div id="logs-list" class="logs-list"></div>
+          </div>
+        </section>
+
+        <!-- ===== WHATSAPP ===== -->
+        <section id="view-whatsapp" class="view">
+          <div class="wa-card glass">
+            <div class="wa-header">
+              <h3>Conexão WhatsApp</h3>
+              <span class="wa-status-big" id="wa-status-big">—</span>
+            </div>
+            <div class="wa-body">
+              <div class="wa-qr-area" id="wa-qr-area">
+                <img id="wa-qr-img" class="wa-qr-img hidden" alt="QR Code WhatsApp" />
+                <div id="wa-qr-placeholder" class="wa-qr-placeholder">
+                  <div class="qr-spinner"></div>
+                  <p>Aguardando QR code…</p>
+                </div>
+                <p id="wa-pairing" class="wa-pairing hidden"></p>
+              </div>
+              <div class="wa-instructions">
+                <h4>Como conectar:</h4>
+                <ol>
+                  <li>Abra o <b>WhatsApp</b> no celular do número de atendimento</li>
+                  <li>Toque em <b>Aparelhos conectados</b></li>
+                  <li>Toque em <b>Conectar aparelho</b></li>
+                  <li>Escaneie o <b>QR code</b> ao lado</li>
+                </ol>
+                <div class="wa-actions">
+                  <button id="wa-reconnect" class="btn btn-primary">🔄 Reconectar</button>
+                  <button id="wa-logout" class="btn btn-danger">⛔ Desconectar</button>
+                </div>
+                <p class="wa-note">Número do dono (escalonamento): <a href="https://wa.me/5519997048175" target="_blank" rel="noopener">(19) 99704-8175</a></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/admin/js/app.js"></script>
+</body>
+</html>

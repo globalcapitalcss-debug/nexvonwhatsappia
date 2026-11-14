@@ -1,0 +1,18 @@
+﻿# 🔒 SENHAS E CONFIGURAÇÃO LOCAL — NUNCA SUBIR PARA O GITHUB!
+.env
+# 📦 Dependências — serão instaladas automaticamente com "npm install"
+node_modules/
+# 🗄️ Banco de dados e dados do sistema
+data/
+*.db
+*.db-journal
+# 📱 Sessão do WhatsApp
+sessions/
+*.json.lock
+# 💻 Sistema operacional
+.DS_Store
+Thumbs.db
+# 📝 Logs
+logs/
+*.log
+npm-debug.log*
